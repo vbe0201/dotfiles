@@ -7,4 +7,3 @@ export TERMINAL="urxvt"
 export EDITOR="vim"
 export BROWSER="firefox"
 export READER="zathura"
-
