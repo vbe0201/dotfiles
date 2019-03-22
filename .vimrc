@@ -9,6 +9,9 @@ call vundle#begin()
 " Load plugin manager
 Plugin 'VundleVim/Vundle.vim'
 
+" Vimscript plugin library
+Plugin 'google/vim-maktaba'
+
 " Automatically close brackets
 Plugin 'jiangmiao/auto-pairs'
 
