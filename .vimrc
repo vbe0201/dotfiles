@@ -90,7 +90,7 @@ set showmode
 set incsearch
 set ruler
 set hid
-set whichwrap+=<,>,h,1
+set whichwrap+=<,>,h,l
 set mouse=a
 set numberwidth=6
 set encoding=utf-8
