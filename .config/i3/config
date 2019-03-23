@@ -171,7 +171,7 @@ bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcu
 
 # Bind screenshot utility
 bindsym Print exec "maim -s | xclip -selection clipboard -t image/png"
-bindsym --release Shift+Print exec "maim ~/Pictures/Screenshots/$(date + %s).png | xclip -selection clipboard -t image/png"
+bindsym --release Shift+Print exec "maim ~/Pictures/Screenshots/$(date +%s).png | xclip -selection clipboard -t image/png"
 
 # Bind System keys
 bindsym XF86PowerOff exec --no-startup-id prompt "Shutdown computer?" "$shutdown"
