@@ -1,0 +1,1006 @@
+#!/bin/bash
+# morc_menu
+# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ┃  Categorized menu of desktop applications                 ┃
+# ┃                                                           ┃
+# ┃  This script simulates the functionality of an Openbox    ┃
+# ┃  / Fluxbox style menu without requiring those window      ┃
+# ┃  managers or associated dependencies. It was originally   ┃
+# ┃  written for the i3 window manager, and using 'dmenu' as  ┃
+# ┃  as its front-end, but it should also work in pretty much ┃
+# ┃  any X11 environment, and has been tested with            ┃
+# ┃  alternative front-ends such as 'rofi', 'zenity' and      ┃
+# ┃  'yada'.                                                  ┃
+# ┃                                                           ┃
+# ┃  This script generates menus based upon the presence of   ┃
+# ┃  .desktop files in the system-wide definition folder      ┃
+# ┃  /usr/share/applications and the user-local definition    ┃
+# ┃  folder ${HOME}/.local/share/applications, per the        ┃
+# ┃  xfreedesktop and linux LSB standards. Your system        ┃
+# ┃  may have additional .desktop files in other locations.   ┃
+# ┃  That seems to be the case for 'optional' items. Linux's  ┃
+# ┃  expectation is that if a sysadmin would like entries for ┃
+# ┃  those items system-wide, the sysadmin would copy them    ┃
+# ┃  to /usr/share/applications. If you want them for a       ┃
+# ┃  specific user, place them in that user's                 ┃
+# ┃  ${HOME}/.local/share/applications folder.                ┃
+# ┃                                                           ┃
+# ┃  To find all system-wide desktop files:                   ┃
+# ┃    'find /usr -type f -name "*.desktop"'                  ┃
+# ┃                                                           ┃
+# ┃  Requirements: dmenu or rofi or zenity or yada            ┃
+# ┃                                                           ┃
+# ┃  Setup:                                                   ┃
+# ┃    If your distribution has a packaged version of this    ┃
+# ┃    script, it is advisable to install that package and    ┃
+# ┃    to follow any supplemental instructions of the         ┃
+# ┃    packager.                                              ┃
+# ┃                                                           ┃
+# ┃    Manually installing the script involves five steps:    ┃
+# ┃    Copy this script file to a convenient location, for    ┃
+# ┃    example, somewhere on your ${PATH}; Make it executable ┃
+# ┃    by running 'chmod +x /path/to/file'; Optionally, copy  ┃
+# ┃    the script's associated config file to                 ┃
+# ┃    ${HOME}/.config/morc_menu; Optionally, copy the        ┃
+# ┃    script's associated man page to somehwere your system  ┃
+# ┃    will recognize (run command 'manpath', and if you can  ┃
+# ┃    not place it in any of those places, run 'man manpath' ┃
+# ┃    to see how to set $MANPATH), and; Create a keybinding  ┃
+# ┃    for the script. An example keybinding for use with the ┃
+# ┃    i3 window manager would be to modify your              ┃
+# ┃    ${HOME}/.i3/config file to include a statement in the  ┃
+# ┃    form:                                                  ┃
+# ┃       bindsym $mod+z \                                    ┃
+# ┃               exec "${HOME}/path/to/morc_menu"            ┃
+# ┃                                                           ┃
+# ┃  Customization options:                                   ┃
+# ┃    This script offers many ways to customize the menu's   ┃
+# ┃    content and 'look' ('skin'). Refer to the script's     ┃
+# ┃    man page and configuration file for details.           ┃
+# ┃                                                           ┃
+# ┃ Copyright ©2016, Boruch Baum <boruch_baum@gmx.com>        ┃
+# ┃                                                           ┃
+# ┃ This program is free software; you can redistribute it    ┃
+# ┃ and/or modify it under the terms of the GNU General       ┃
+# ┃ Public License aspublished by the Free Software           ┃
+# ┃ Foundation; either version 3 of the License, or (at your  ┃
+# ┃ option) any later version.                                ┃
+# ┃                                                           ┃
+# ┃ This program is distributed in the hope that it will be   ┃
+# ┃ useful, but WITHOUT ANY WARRANTY; without even the        ┃
+# ┃ implied warranty of MERCHANTABILITY or FITNESS FOR A      ┃
+# ┃ PARTICULAR PURPOSE. See the GNU General Public License    ┃
+# ┃ for more details.                                         ┃
+# ┃                                                           ┃
+# ┃ You should have received a copy of the GNU General        ┃
+# ┃ Public License along with this program; if not, write to  ┃
+# ┃ the Free Software Foundation, Inc., 59 Temple Place,      ┃
+# ┃ Suite 330, Boston, MA 02111-1307, USA                     ┃
+# ┃                                                           ┃
+# ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+# PROGRAMMING NOTE: "Do what I say, not what I do". I really do
+# strongly oppose the general use of global variables, but in
+# this script, something just came over me, and some part of my
+# brain insisted.
+
+# TODO: hamdle arbitrary number of sub-menu levels
+# TODO: do I want to set dynamic positioning for the display
+#       of error messages (ie. error_cmd) ?
+
+readonly SCRIPT_VERSION="Version 1.0, 2016-03-18"
+# Exit codes
+readonly \
+  EC_NO_ERROR=0 \
+  EC_TRUE=0     \
+  EC_FALSE=1    \
+  EC_BAD_PARAMETER=1   \
+  EC_FILE_UNREADABLE=2 \
+  EC_IMPOSSIBLE_TO_REACH_HERE=99
+
+# Text constants
+readonly \
+  RETURN_TO_MAIN_MENU="Return to main menu" \
+  VERSION_MESSAGE="\n\
+morc_menu\n\
+  ${SCRIPT_VERSION}\n\
+  Copyright ©2016 Boruch Baum\n\
+  License GPLv3+: GNU GPL version 3 or later\n\
+    <http://gnu.org/licenses/gpl.html>\n\
+  This is free software: you are free to change and redistribute it.\n\
+  There is NO WARRANTY, to the extent permitted by law.\n" \
+  USAGE_MESSAGE="\n\
+Categorized menu\n\
+Usage: morc_menu [ [txt|xml] [in_file] ]\n\
+                 [build [usr|loc|xml [in_file ] ] [out_file] ]\n\
+                 [show [categories|desired|files] ]\n\
+\n\
+  When run with no parameters, displays a dynamically-created,\n\
+  navigable, searchable and selectable menu of installed GUI\n\
+  applications.\n\
+\n\
+  Options:\n\
+    txt        Display a static menu from a txt file.\n\
+    xml        Display a static menu from an xml file.\n\
+    build      Build a static menu definition file, in text format.\n\
+    build usr  Only use data from /usr/share/applications/\n\
+    build loc  Only use data from ~/.local/share/applications/\n\
+    build xml  Only use data from an xml file\n\
+    show       Print to STDOUT the selected sub-option\n\
+      categories  A complete list, from /usr/share/applications/\n\
+      desired     Just those categories to be displayed\n\
+      files       A list of existing .desktop files\n\
+\n\
+    no-sys     Ignore the system-wide pre-built morc_menu txt\n\
+               definition file. This option must precede the\n\
+               above options\n\
+\n\
+    conf=[\"path/to/file\"|none]\n\
+               Over-ride the default conf file settings. This\n\
+               option must be listed first.\n" \
+  ABOUT_MESSAGE="\
+morc_menu\n\
+  A highly customizable script to display your programs,\n\
+  organized by categories. For details see 'man morc_menu'\n"
+
+
+# Field delimiter for our menu definition file. The choice of
+# delimiter turned out to be trickier than expected. OTOH, we need
+# something that won't be confusing to some form of shell expansion
+# or other misinterpretation. OTOH, we need something that won't
+# ever possibly be confused with the first or last character of an
+# element. OTOH, we need something that will sort prior to all
+# alphabetical characters so that favorites, which have no first
+# (category) field show up first. For example: underscores fail,
+# because they sort after capital letters.
+readonly delim="---"
+
+# Favorites category identifier: This is a modification, in order make
+# the format of all records uniform in format, and to alleviate any
+# sorting issues related to having records beginning with a delimiter.
+# We choose a string for the 'Favorites' that will sort at the
+# beginning.
+readonly fav="000"
+
+# I/O files and paths
+readonly menu_file="morc_menu"
+[ -d "${MORC_MENU_DIR}" ] \
+&& readonly default_dir="${MORC_MENU_DIR}" \
+|| readonly default_dir="${HOME}/.config/morc_menu/"
+readonly default_path="${default_dir}${menu_file}"
+readonly \
+  system_txt_path="/etc/morc_menu.txt" \
+  usr_shar_app_path="/usr/share/applications/" \
+  loc_shar_app_path="${HOME}/.local/share/applications/" \
+  conf_path=( "/usr/share/morc_menu/" "/usr/local/share/morc_menu/" "${HOME}/.local/share/morc_menu/" "${default_dir}" )
+
+# Settings for positioning menus
+  # those defined only inside the script
+  declare -i \
+    main_menu_lines=1 \
+    sub_menu_lines=1  \
+    menu_lines=1
+  # those subject to modification by conf files
+  declare use_mouse_position=FALSE
+  declare -i \
+    max_main_line_len=0 \
+    max_sub_line_len=0 \
+    avg_char_width=9 \
+    avg_err_char_width=10 \
+    menu_width=350 \
+    err_menu_width=350 \
+    line_height=20 # Both 'menu_width' and 'line_height' are measured
+                   # in pixels. Until we learn how to directly measure
+                   # them, we need to set them manually by trial and
+                   # error.
+  # those subject to modification by either conf files or the script
+  declare -i \
+    x_position=300 \
+    y_position=20
+
+# Settings subject to modification at the command line
+declare \
+  conf_name="morc_menu_v1.conf" \
+  only_conf_file="" \
+  ignore_system_txt="FALSE"
+
+# Settings of dmenu, subject to modification by conf files
+# refer to conf file for examples
+menu_cmd="dmenu -i -l MENU_LINES"
+error_cmd="dmenu -i -l 40 -nb red -nf black -fn Hack"
+
+# Settings of morc_menu, subject to modification by conf files
+menu_prefix=" [menu]: "
+menu_suffix=" >"
+align_suffix="TRUE"
+desired_categories="Favorites Settings Development Documentation Education System Network Utility Graphics Office AudioVideo"
+declare -A category_aliases=( [Utility]=Accessories [AudioVideo]=Multimedia [Network]=Internet )
+unwanted_names=(  )
+unwanted_execs=(  )
+unwanted_specifics=(  )
+max_num_backups=5
+exclude_about="FALSE"
+exclude_from_static="FALSE"
+exclude_from_dynamic="TRUE"
+add_to_static="FALSE"
+add_to_dynamic="TRUE"
+# Variable 'apply_exclusions' should not exist in the configuration
+# file. It is set by the script based upon variables
+# exclude_from_static and exclude_from_dynamic, so that a single
+# variable can be used by script functions to toggle this feature. A
+# corresponding variable for add_to_static and add_to_dynamic was not
+# necessary.
+apply_exclusions="FALSE"
+
+# Philosophically, these next should NOT be declared globally
+# in_file, out_file: paths reading/writing static menus
+declare in_file=""
+declare out_file=""
+# Lists and their indices:
+#   list[*]  - the data
+#   ii - the recurringly restarted working index into list
+declare -a list
+declare -i ii=0
+# max_cat_len: used to right-pad the categories with spaces so we can
+# have nicely vertically aligned menu suffixes
+declare -i max_cat_len=0
+# response: text returned from the chosen menu front-end (eg. 'dmenu')
+declare response=""
+
+function version_message() {
+  echo -e "${VERSION_MESSAGE}"
+  }
+
+function usage_message() {
+  echo -e "${USAGE_MESSAGE}"
+  }
+
+function input_file_error() {
+  if [ ${avg_err_char_width} -gt 0 ] ; then
+    in_file_width=$(( ${avg_err_char_width} * ${#in_file} ))
+    [ ${err_menu_width} -lt ${in_file_width} ] \
+    && err_menu_width=${in_file_width}
+    fi
+  error_cmd="${error_cmd/MENU_WIDTH/${err_menu_width}}"
+  printf "%s\n" \
+    "ERROR: morc_menu"    \
+    "could not read input file"  \
+    "${in_file}"                 \
+  | ${error_cmd}
+  exit $EC_FILE_UNREADABLE
+  }
+
+function parse_external_conf_file () {
+  while read -r || [[ -n "${REPLY}" ]] ; do
+    # The purpose of this case statement is to ignore attempts by
+    # external configuration files to set variables needed to be
+    # protected by the script. Originally all variables were accounted
+    # for in this list (thank you emacs!), but for efficiency I
+    # removed read-only variables (the resulting errors won't abort
+    # the script).
+    case ${REPLY} in
+    external_skin_definition_file=*) ;&
+    x_position=*)           ;&
+    y_position=*)           ;&
+    menu_width=*)           ;&
+    err_menu_width=*)       ;&
+    line_height=*)          ;&
+    main_menu_lines=*)      ;&
+    sub_menu_lines=*)       ;&
+    menu_lines=*)           ;&
+    use_mouse_position=*)   ;&
+    max_main_line_len=*)    ;&
+    max_sub_line_len=*)     ;&
+    avg_char_width=*)       ;&
+    avg_err_char_width=*)   ;&
+    menu_cmd=*)             ;&
+    error_cmd=*)            ;&
+    menu_prefix=*)          ;&
+    menu_suffix=*)          ;&
+    align_suffix=*)         ;&
+    desired_categories=*)   ;&
+    category_aliases=*)     ;&
+    unwanted_names=*)       ;&
+    unwanted_execs=*)       ;&
+    unwanted_specifics=*)   ;&
+    max_num_backups=*)      ;&
+    exclude_about=*)        ;&
+    ignore_system_txt=*)    ;&
+    additional_entries=*)   ;&
+    exclude_from_static=*)  ;&
+    exclude_from_dynamic=*) ;&
+    add_to_static=*)        ;&
+    add_to_dynamic=*)       ;&
+    apply_exclusions=*)     ;&
+    in_file=*)              ;&
+    out_file=*)             ;&
+    list=*)                 ;&
+    ii=*)                   ;&
+    max_cat_len=*)          ;&
+    response=*)
+      ;;
+    *)
+      # basic sanity test to only read lines that seem like variable
+      # assignments, to ensure that an assignment takes place, and to
+      # prevent simple code-injection
+      [[ "${REPLY}" =~ ^\ *[[:alpha:]]+[[:alnum:]_-]*=.*$ ]] \
+      && eval "${REPLY%%=*}"="${REPLY#*=}"
+      ;;
+    esac
+    done < "$1"
+  }
+
+function parse_one_conf_file() {
+  while read -r || [[ -n "${REPLY}" ]] ; do
+    case ${REPLY} in
+    external_skin_definition_file=*)
+      eval "${REPLY%%=*}"="${REPLY#*=}"
+      [ -r "${external_skin_definition_file}" ] \
+      && parse_external_conf_file "${external_skin_definition_file}"
+#     || {
+#       error_cmd="${error_cmd/MENU_WIDTH/${err_menu_width}}"
+#       printf "%s\n" \
+#         "ERROR: morc_menu"    \
+#         "could not read file"  \
+#         "${external_skin_definition_file}" \
+#         "referred to by file" $1 \
+#         "press <return> to continue" \
+#       | ${error_cmd}
+#       }
+      ;;
+    use_mouse_position=*)   ;&
+    menu_prefix=*)          ;&
+    menu_suffix=*)          ;&
+    align_suffix=*)         ;&
+    menu_cmd=*)             ;&
+    error_cmd=*)            ;&
+    desired_categories=*)   ;&
+    category_aliases=*)     ;&
+    unwanted_names=*)       ;&
+    unwanted_execs=*)       ;&
+    unwanted_specifics=*)   ;&
+    additional_entries=*)   ;&
+    exclude_from_static=*)  ;&
+    exclude_from_dynamic=*) ;&
+    add_to_static=*)        ;&
+    add_to_dynamic=*)       ;&
+    apply_exclusions=*)     ;&
+    max_num_backups=*)      ;&
+    exclude_about=*)        ;&
+    ignore_system_txt=*)
+      eval "${REPLY%%=*}"="${REPLY#*=}"
+      ;;
+    x_position=*)           ;&
+    y_position=*)           ;&
+    avg_char_width=*)       ;&
+    avg_err_char_width=*)   ;&
+    menu_width=*)           ;&
+    err_menu_width=*)       ;&
+    line_height=*)
+      if [ "${REPLY#*=}" -lt 0 ] ; then
+        eval "${REPLY%%=*}"=0
+      else
+        eval "${REPLY%%=*}"="${REPLY#*=}"
+        fi
+      ;;
+      esac
+    done < "$1"
+  }
+
+function parse_conf_files() {
+  if [ -n "${only_conf_file}" ] ; then
+    [[ "${only_conf_file}" == "none" ]] && return
+    if [ ! -r "${only_conf_file}" ] ; then
+      in_file="${only_conf_file}"
+      input_file_error
+    else
+      parse_one_conf_file "${only_conf_file}"
+      fi
+  else
+    for this_conf_path in "${conf_path[@]}" ; do
+      [ -r "${this_conf_path}${conf_name}" ] \
+      && parse_one_conf_file "${this_conf_path}${conf_name}"
+      done
+    fi
+  # If the user doesn't have a personal copy of the configuration file
+  # in ${HOME}/.config/morc_menu, put it there.
+  if [ ! -e "${default_dir}${conf_name}" ] ; then
+    [ ! -e "${default_dir}" ] \
+    && mkdir -p "${default_dir}"
+    for (( ii=(( ${#conf_path[@]}-1 )); ii-- ; )) ; do
+      if [ -r "${conf_path[ $ii ]}${conf_name}" ] ; then
+        cp "${conf_path[ $ii ]}${conf_name}" "${default_dir}"
+        break
+        fi
+      done
+    ii=0
+    fi
+  }
+
+function pad_right() {
+  # This function is a late-entrant, and I'm not sure I really want
+  # the extra fluff. The idea is to support a vertically aligned
+  # suffix (eg. 'menu_suffix=" >"') to sub-menu labels to indicate
+  # that they aren't executables. For this we now have function
+  # shar_app keep a running tally of the longest sub-menu category
+  # string, so if this function gets removed, remove that snippet as
+  # well. This function is designed to align flush to the longest
+  # entry, so if you want whitespace, add it in variable
+  # 'menu_suffix'.
+  # If there's no suffix, there's no reason to pad right
+  [ -z "${menu_suffix}" ] || [[ "${align_suffix}" != "TRUE" ]] && return
+  list_len=${#list[@]}
+  for (( ii=0; $ii-$list_len; ii++ )) ; do
+    e_cat="${list[$ii]%%${delim}*}"
+    e_rest="${list[$ii]#*${delim}}"
+    printf -v "list[$ii]" "%-*s%s%s" ${max_cat_len} \
+      "${e_cat}" "${delim}" "${e_rest}"
+    done
+  }
+
+function position_menu_at_mouse_point() {
+  # function must receive two parameters
+  # $1 = the number of lines in the menu
+  # $2 = the pixel width of the longest menu line
+  type -f xdotool wattr lsw &> /dev/null || return
+  menu_height=$(( $1 * ${line_height} ))
+  # the following assigns values to $X and $Y
+  eval $(xdotool getmouselocation --shell)
+  root_window_id=$(lsw -r)
+  monitor_width=$(wattr w ${root_window_id})
+  monitor_height=$(wattr h ${root_window_id})
+  maxx=$(( ${monitor_width} - $2 ))
+  maxy=$(( ${monitor_height} - ${menu_height} ))
+  x_position=${X}
+  [ ${x_position} -gt ${maxx} ] && x_position=${maxx}
+  y_position=${Y}
+  [ ${y_position} -gt ${maxy} ] && y_position=${maxy}
+  }
+
+function backup_a_file() {
+  # if there's no file to backup, we're done
+  [ ! -f $1 ] \
+  && return ${EC_NO_ERROR}
+  # check for a positive integer
+  [[ "${max_num_backups}" =~ ^[0-9]+$ ]] \
+  || return ${EC_BAD_PARAMETER} # TODO: log this error!
+  # if nothing matches pattern "$1_*" we want null
+  shopt -s nullglob
+  backup_file_list=( $1_* )
+  if [ ${max_num_backups} -eq 0 ] ; then
+    # if the user just now reduced the value to zero
+    # then remove all existing backups
+    [ -n "${backup_file_list[*]}" ] \
+    && rm "${backup_file_list[@]}"
+    return ${EC_NO_ERROR}
+  elif [ -n "${backup_file_list[*]}" ] ; then
+    final=$(( ${#backup_file_list[@]}-1 ))
+    if cmp -s "$1" "${backup_file_list[$final]}" ; then
+      touch "${backup_file_list[$final]}"
+    else
+      mv $1 $1"_$(printf '%(%y-%m-%d-%T)T')"
+      fi
+    rm_these=$(( ${final}+1-${max_num_backups} ))
+    while [ ${rm_these} -gt 0 ] ; do
+      # This works because bash claims that it produces pathname
+      # expansion in an alphabetically sorted list, so we will be
+      # removing the oldest backup files, starting from the newest
+      # back to the oldest
+      rm "${backup_file_list[ $((--rm_these)) ]}"
+      done
+  else
+    mv $1 $1"_$(printf '%(%y-%m-%d-%T)T')"
+    fi
+  }
+
+function build_sort() {
+  printf "%s\n" "${list[@]}" \
+  | LC_COLLATE=POSIX sort --ignore-case --unique
+  }
+
+function build_xml() {
+  menu_text="${fav}" # They put Favorites at the head, with no category
+  item_text=""
+  executable=""
+  while read -r || [[ -n "${REPLY}" ]] ; do
+    if [[ "$REPLY" =~ ^\ *\<item.*$ ]] ; then
+      REPLY="${REPLY/#*label=\"/}"
+      item_text="${REPLY/\"*/}"
+      if [[ "$REPLY" == *CDATA* ]] ; then
+        executable="${REPLY/*CDATA\[/}"
+        executable="${executable/\]*/}"
+      else
+        executable=""
+        fi
+      list[ $((ii++)) ]="${menu_text}${delim}${item_text}${delim}${executable}"
+    elif [[ "$REPLY" =~ ^\ *\<menu.*$ ]] ; then
+      menu_text="${REPLY/*label=\"/}"
+      menu_text="${menu_text/\">/}"
+      fi
+    done < "${in_file}"
+  list_len=$((--ii))
+  }
+
+function is_this_entry_unwanted() {
+  # compare categories, names and executables against the config
+  # file's black-list.
+  category="$1"
+  name="$2"
+  exec_="$3"
+  for unwanted in "${unwanted_names[@]}" ; do
+    [[ "${name}" =~ ^"${unwanted}"$ ]] \
+    && return $EC_TRUE
+    done
+  for unwanted in "${unwanted_execs[@]}" ; do
+    [[ "${exec_}" =~ ^"${unwanted}"$ ]] \
+    && return $EC_TRUE
+    done
+  for unwanted in "${unwanted_specifics[@]}" ; do
+    [[ "${category}${delim}${name}${delim}${exec_}" == "${unwanted}" ]] \
+    && return $EC_TRUE
+    done
+  return $EC_FALSE
+  }
+
+function shar_app() {
+  # Process the .desktop files in a particular directory ($1)
+  in_path="$1"
+  # $2, if existing, should only have a value "local", meaning
+  # that we are processing a user-local folder,
+  # eg. ${HOME}/.local/share/applications
+  for in_file in ${in_path}*.desktop ; do
+    [ -r "${in_file}" ] || continue
+  # We don't want to set the index ${ii} here because we want
+  # to accumulate data in $list[] from multiple calls to this
+  # function.
+  # ii=0
+    declare -c name="" # option '-c' auto-capitalizes future content
+    exec_=""
+    categories=""
+    terminal=""
+    nodisplay=""
+    while read -r || [[ -n "${REPLY}" ]] ; do
+      case ${REPLY} in
+      # The following -z checks became necessary when it was observed
+      # that some .desktop files had multiple and alternative
+      # secondary forms
+      Name=*)
+        [ -z "${name}" ] \
+        && {
+          name="${REPLY#Name=}"
+          name="${name/% /}"
+          }
+        ;;
+      Exec=*)
+        [ -z "${exec_}" ] \
+        && {
+          exec_="${REPLY#Exec=}"
+          exec_="${exec_// %[fFuU]}"
+          }
+        ;;
+      Categories=*)
+        [ -z "${categories}" ] \
+        && categories="${REPLY#Categories=}"
+        ;;
+      Terminal=*)
+        [ -z "${terminal}" ] \
+        && terminal="${REPLY#Terminal=}"
+        ;;
+      NoDisplay=*)
+        [ -z "${nodisplay}" ] \
+        && nodisplay="${REPLY#NoDisplay=}"
+        [[ "${nodisplay}" == "true" ]] \
+        && continue 2
+        # The 'continue 2' aborts processing this '.desktop' file
+        ;;
+      esac
+      done < "${in_file}"
+    # 1] if a .desktop definition applies itself to more than
+    #    one category, create an entry for each.
+    # 2] if the definition's category has been aliased, apply
+    #    that now
+    # 3] if the definition specifies a cli environment, apply
+    #    that now (prefix "terminal -e ")
+    # 4] if the sysadmin has added "Favorites" to the list of
+    #    categories, treat this as a "Favorite"
+    for category in ${categories//;/ } ; do
+      if [[ ${desired_categories} =~ ${category} ]] ; then
+        [[ "${apply_exclusions}" = "TRUE" ]] \
+        && is_this_entry_unwanted "${category}" "${name}" "${exec_}" \
+        && continue
+        [ -n "${category_aliases[${category}]}" ] \
+        && category=${category_aliases[${category}]}
+        [[ "${category}" == "Favorites" ]] \
+        || [ -z "${category}" ] \
+        && category="${fav}"
+        [[ ${terminal} == "true" ]] \
+        && exec_="terminal -e ${exec_}"
+        # keep track here of the maximum length of the categories so
+        # we can later easily right pad them with spaces in order to
+        # enable vertically aligned menu suffixes.
+        this_cat_len=${#category}
+        [ ${this_cat_len} -gt ${max_cat_len} ] \
+        && max_cat_len=${this_cat_len}
+        list[ $((ii++)) ]="${category}${delim}${name}${delim}${exec_}"
+        fi
+      done
+    if [[ "$2" == "local" ]] \
+    && [ -z "${categories}" ] ; then
+      # Well, the user put it here for a reason,
+      # so treat it as a favorite
+      [[ ${terminal} == "true" ]] \
+      && exec_="terminal -e ${exec_}"
+      list[ $((ii++)) ]="${fav}${delim}${name}${delim}${exec_}"
+      fi
+    done
+  }
+
+function build_usr_shar_app() {
+  if [[ "${ignore_system_txt}" == "TRUE" ]] ; then
+    shar_app "${usr_shar_app_path}"
+    return
+    fi
+  in_file="${system_txt_path}"
+  load_txt_file "${apply_exclusions}"
+  }
+
+function build_loc_shar_app() {
+  # Yes, at this point, this function is nothing more than a useless
+  # and wasteful redirect, but its here for readability to keep
+  # parallel sounding function names for similar purposes.
+  shar_app "${loc_shar_app_path}" "local"
+  }
+
+function add_custom_entries() {
+  # Had we wanted to be kind and charitable to users who erred in
+  # formatting the array 'additional_entries', we would perform sanity
+  # checks here, exclude improperly formatted entries, and possibly
+  # warn the user.
+  list=( "${list[@]}" "${additional_entries[@]}" )
+  }
+
+function build_all() {
+  [[ "${exclude_from_static}" == "TRUE" ]] \
+  && apply_exclusions="TRUE" \
+  || apply_exclusions="FALSE"
+  build_usr_shar_app
+  build_loc_shar_app
+  [[ "${add_to_static}" == "TRUE" ]] \
+  && add_custom_entries
+  }
+
+function display_a_menu() {
+  # function must receive three parameters:
+  # $1 = number of lines in the menu
+  # $2 = maximum number of character in a menu line.
+  #      this is ignored if $avg_char_width == 0
+  # $3 = pre-formatted menu text
+  [ ${avg_char_width} -gt 0 ] \
+  && menu_width=$(( ${avg_char_width} * $2 ))
+  [[ "${use_mouse_position}" == "TRUE" ]] \
+  && position_menu_at_mouse_point $1 ${menu_width}
+  display_cmd="${menu_cmd/X_POSITION/${x_position}}"
+  display_cmd="${display_cmd/Y_POSITION/${y_position}}"
+  display_cmd="${display_cmd/MENU_LINES/$1}"
+  display_cmd="${display_cmd/MENU_WIDTH/${menu_width}}"
+  # prompt the user and receive the response
+  # for the main menu
+  response=$( echo -e "$3" | ${display_cmd} )
+  }
+
+function exec_about() {
+  display_a_menu "11" "63" "${ABOUT_MESSAGE}${VERSION_MESSAGE}"
+  exit EC_NO_ERROR
+  }
+
+function produce_menu() {
+  # produce the menu, prompt the user and launch the request:
+  # + prepare an initial display of favorites and submenu labels
+  # + if a submenu label is selected, prepare its own display
+  # + allow the user to navigate back to the main menu or to quit
+  # + determine the executable to launch, and do so
+  #
+  # Include here a menu entry 'about' the script instead
+  # of in 'shar_app' when building the menu because we want
+  # the run-time, not build-time version and other info.
+  [[ "${exclude_about}" != "TRUE" ]] \
+  && list[ $(( list_len++ )) ]="${fav}${delim}About${delim}"
+  # prepare an initial display of favorites and submenu labels
+  dmenu_item=""
+  # the first menu element is always...
+  main_menu_text="Quit this menu"
+  [ $avg_char_width -gt 0 ] \
+  && max_main_line_len=14
+  category=""
+  for (( ii=0; $ii-$list_len; ii++ )) ; do
+    if [ -z "${list[$ii]}" ] ; then
+      :
+    elif [[ ${list[$ii]} =~ ^${fav}.*$ ]] ; then
+      # 'favorite' item, one not under a menu
+      dmenu_item="${list[$ii]#*${delim}}"
+      dmenu_item="${dmenu_item/${delim}*/}"
+      main_menu_text="${main_menu_text}\n${dmenu_item}"
+      let $(( main_menu_lines++ ))
+      [ ${avg_char_width} -gt 0 ] \
+      && [ ${#dmenu_item} -gt ${max_main_line_len} ] \
+      && max_main_line_len=${#dmenu_item}
+    else
+      # sub-menu label
+      dmenu_item=${list[$ii]/${delim}*/}
+      if [[ "${category}" != "${dmenu_item}" ]] ; then
+        category=${dmenu_item}
+        # add sub-menu prefix and suffix
+        dmenu_item="${dmenu_item/#/${menu_prefix}}"
+        dmenu_item="${dmenu_item/%/${menu_suffix}}"
+        main_menu_text="${main_menu_text}\n${dmenu_item}"
+        let $(( main_menu_lines++ ))
+        [ ${avg_char_width} -gt 0 ] \
+        && [ ${#dmenu_item} -gt ${max_main_line_len} ] \
+        && max_main_line_len=${#dmenu_item}
+        fi
+      fi
+    done
+  # compose a shell command to prompt the user
+  response="${RETURN_TO_MAIN_MENU}"
+  while [[ "${response}" == "${RETURN_TO_MAIN_MENU}" ]] ; do
+    display_a_menu ${main_menu_lines} ${max_main_line_len} "${main_menu_text}"
+    if [[ "${response}" =~ ^"${menu_prefix}".*"${menu_suffix}"$  ]] ; then
+      # prepare a sub-menu display
+      #
+      # In order to identify the selection, we must
+      # first remove sub-menu prefix and suffix
+      response="${response:${#menu_prefix}}"
+      response="${response/%${menu_suffix}}"
+      dmenu_item=""
+      # the first sub-menu element is always...
+      sub_menu_text="${RETURN_TO_MAIN_MENU}"
+      sub_menu_lines=1
+      [ $avg_char_width -gt 0 ] \
+      && max_sub_line_len=19
+      for (( ii=0; $ii-$list_len; ii++ )) ; do
+        if [[ "${list[$ii]}" =~ ^${response}${delim}.*${delim}.*$ ]] ; then
+          dmenu_item="${list[$ii]/${response}${delim}/}"
+          dmenu_item="${dmenu_item/${delim}*/}"
+          sub_menu_text="${sub_menu_text}\n${dmenu_item}"
+          let $(( sub_menu_lines++ ))
+          [ $avg_char_width -gt 0 ] \
+          && [ ${#dmenu_item} -gt ${max_sub_line_len} ] \
+          && max_sub_line_len=${#dmenu_item}
+          fi
+        done
+      display_a_menu ${sub_menu_lines} ${max_sub_line_len} "${sub_menu_text}"
+      fi
+    done
+  # determine the executable to launch
+  [[ "${response}" == "About" ]] \
+  && exec_about # exits morc_memu there
+  # we need to escape all occurrences of any regex character that
+  # might be in the menu text. Unfortunately, bash doesn't have
+  # group referencing so each character needs its own statement
+  # (still much more efficient than calling an external program).
+  response=${response//\\/\\\\}
+  response=${response//\(/\\\(}
+  response=${response//\)/\\\)}
+  response=${response//\[/\\\[}
+  response=${response//\]/\\\]}
+  response=${response//\{/\\\{}
+  response=${response//\}/\\\}}
+  response=${response//\./\\\.}
+  response=${response//\*/\\\*}
+  response=${response//\+/\\\+}
+  response=${response//\?/\\\?}
+  response=${response//\^/\\\^}
+  response=${response//\$/\\\$}
+  for (( ii=0; $ii-$list_len; ii++ )) ; do
+    if [[ ${list[$ii]} =~ ^.*${delim}${response}${delim}.*$ ]] ; then
+      executable="${list[$ii]##*${delim}}"
+      break
+      fi
+    done
+  # launch!
+  echo "categorized menu:"
+  echo -e "response   = ${response}\nexecutable = ${executable}"
+  exec $executable
+  }
+
+function load_txt_file() {
+  # $1 = variable 'exclude_from_static' or 'exclude_from_dynamic', or
+  #      their aggregator variable 'apply_exclusions'
+  if [[ "$1" != "TRUE" ]] ; then
+    exec 3< "${in_file}"
+    mapfile -u3 list
+    list_len=$(( ${#list[@]} ))
+  else
+    while read -r || [[ -n "${REPLY}" ]] ; do
+      a_cat="${REPLY%%${delim}*}"
+      a_name="${REPLY#*${delim}}"
+      a_name="${a_name/${delim}*/}"
+      a_exec="${REPLY##*${delim}}"
+      is_this_entry_unwanted "${a_cat}" "${a_name}" "${a_exec}" \
+      || list[ $((ii++)) ]="${REPLY}"
+      done < "${in_file}"
+    list_len=${ii}
+    fi
+  }
+
+function load_and_produce_menu_from_txt() {
+  [ ! -r ${in_file} ] \
+  && input_file_error
+  load_txt_file "${exclude_from_static}"
+  if [[ "${add_to_static}" != "TRUE" ]] ; then
+    produce_menu
+  else
+    add_custom_entries
+    pad_right
+    # re-sort and de-duplicate
+    build_sort \
+    | {
+      mapfile list
+      list_len=${#list[*]}
+      produce_menu
+      }
+    fi
+  }
+
+function show_categories() {
+  grep Categories /usr/share/applications/*.desktop \
+  | cut -d"=" -f2 \
+  | sed 's/;/\n/g' \
+  | LC_COLLATE=POSIX sort --ignore-case --unique
+  }
+
+function show_desktop_file_names() {
+  in_path="/usr/share/applications/"
+  for in_file in ${in_path}*.desktop ; do
+    in_file=${in_file##*\/}
+    echo ${in_file:0:-8}
+    done }
+
+function show_desired() {
+  printf "\ndesired categories:\n"
+  { for category in ${desired_categories} ; do
+      if [ -n "${category_aliases[${category}]}" ] ; then
+        alias_msg="|(will display as \"${category_aliases[${category}]}\")"
+      else
+        alias_msg=""
+        fi
+      printf "  %s%s\n" ${category} "${alias_msg}"
+      done
+    } | column -s"|" -t
+  echo ""
+  }
+
+# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ┃ MAIN: The script begins running here                      ┃
+# ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+shopt -s nocasematch # do not be case sensitive
+if [[ "$1" =~ ^(-)?(-)?(usage|help)$ ]] ; then
+  usage_message
+  exit $EC_NO_ERROR
+elif [[ "$1" =~ ^(-)?(-)?(version)$ ]] ; then
+  version_message
+  exit $EC_NO_ERROR
+  fi
+if [[ "$1" =~ ^conf=* ]] ; then
+  only_conf_file="${1#*=}"
+  shift
+  fi
+parse_conf_files
+if [[ "$1" == "no-sys" ]] ; then
+  ignore_system_txt="TRUE"
+  shift
+elif [ ! -r "${system_txt_path}" ] ; then
+  ignore_system_txt="TRUE"
+  fi
+if [[ $# == 0 ]] ; then
+  [[ "${exclude_from_dynamic}" == "TRUE" ]] \
+  && apply_exclusions="TRUE" \
+  || apply_exclusions="FALSE"
+  build_usr_shar_app
+  build_loc_shar_app
+  [[ "${add_to_dynamic}" == "TRUE" ]] \
+  && add_custom_entries
+  pad_right
+  build_sort \
+  | {
+    mapfile list
+    list_len=${#list[*]}
+    produce_menu
+    }
+  exit $EC_NO_ERROR
+  fi
+case "$1" in
+xml)
+  [ -z "$2" ] \
+  && in_file=${default_path}".xml" \
+  || in_file="$2"
+  [ ! -r "${in_file}" ] \
+  && input_file_error
+  build_xml
+  produce_menu
+  exit $EC_NO_ERROR
+  ;;
+txt)
+  # this option is only necessary to save the user
+  # from typing in the default filepath
+  [ -z "$2" ] \
+  && in_file=${default_path}".txt" \
+  || in_file="$2"
+  load_and_produce_menu_from_txt
+  exit $EC_NO_ERROR
+  ;;
+build)
+  if [ -z "$2" ] ; then
+    out_file=${default_path}".txt"
+    build_all
+  else
+    case $2 in
+    usr)
+      [ -z "$3" ] \
+      && out_file=${default_path}"_usr.txt" \
+      || out_file="$3"
+      ignore_system_txt="TRUE"
+      [[ "${exclude_from_static}" == "TRUE" ]] \
+      && apply_exclusions="TRUE" \
+      || apply_exclusions="FALSE"
+      build_usr_shar_app
+      ;;
+    loc)
+      [ -z "$3" ] \
+      && out_file=${default_path}"_usr.txt" \
+      || out_file="$3"
+      out_file=${default_path}"_loc.txt"
+      build_loc_shar_app
+      ;;
+    xml)
+      [ -z "$3" ] \
+      && in_file=${default_path}".xml" \
+      || in_file="$3"
+      [ ! -r "${in_file}" ] \
+      && input_file_error
+      [ -z "$4" ] \
+      && out_file=${default_path}"_xml.txt" \
+      || out_file="$4"
+      build_xml
+      ;;
+    *)
+      out_file="$2"
+      build_all
+      ;;
+      esac # End of sub-cases of option 'build'
+    fi
+  pad_right
+  [ ! -d "${default_dir}" ] \
+  && mkdir -p "${default_dir}"
+  backup_a_file "${out_file}"
+  build_sort > "${out_file}"
+  exit $EC_NO_ERROR
+  ;;
+show)
+  case $2 in
+  categories)
+    show_categories
+    exit $EC_NO_ERROR
+    ;;
+  desired)
+    show_desired
+    exit $EC_NO_ERROR
+    ;;
+  files)
+    show_desktop_file_names
+    exit $EC_NO_ERROR
+    ;;
+  *)
+    usage_message
+    exit $EC_BAD_PARAMETER
+    ;;
+  esac
+  ;; # End of sub-cases of option 'show'
+*) # presume file name and request is to produce a static menu
+  in_file="$1"
+  load_and_produce_menu_from_txt
+  exit $EC_NO_ERROR
+  ;;
+esac
+echo "ERROR: It should be impossible to reach this message"
+exit $EC_IMPOSSIBLE_TO_REACH_HERE

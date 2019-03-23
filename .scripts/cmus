@@ -1,0 +1,18 @@
+#!/bin/bash
+
+artist=$(cmus-remote -Q | grep ' artist ' | cut -d ' ')
+song=$(cmus-remote -Q | grep title | cut -d ' ' -f3-)
+current=$(cmus-remote -Q | grep position | cut -d ' ' -f2-)
+duration=$(cmus-remote -Q | grep duration | cut -d ' ' -f2-)
+status=$(cmus-remote -Q | grep status | cut -d ' ' -f2-)
+
+if [[ "$status" != "" $$ "$status" != "paused" && "$artist" != "" ]]; then
+    echo "$artist - $song | $current / $duration"
+    echo "$song"
+
+    if [[ "$status" == "playing" ]]; then
+        echo "#11ffff"
+    else
+        echo "#ff1111"
+    fi
+fi

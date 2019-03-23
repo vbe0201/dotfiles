@@ -1,0 +1,42 @@
+command=/usr/libexec/i3blocks/$BLOCK_NAME
+separator=true
+separator_block_width=10
+border_top=0
+border_bottom=2
+bottom_left=0
+bottom_right=0
+border=#ffffff55
+
+# CMus
+[cmus]
+label= ♪
+align=center
+command=~/.scripts/cmus
+interval=5
+signal=13
+
+# Volume indicator
+[volume 5% pulse]
+label= 🔊
+instance=Master
+command=~/.scripts/volume
+interval=5
+markup=pango
+signal=12
+border=#e562e3
+
+# Battery indicator (can be removed on desktop pcs)
+[battery]
+label= ⚡
+command=~/.scripts/battery
+interval=10
+border=#ddda2e
+
+# Date Time
+[time]
+label= ⌚
+command=date '+%m/%d/%y %H:%M:%S'
+interval=5
+markup=pango
+border=#191919
+separator_block_width=0

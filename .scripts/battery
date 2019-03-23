@@ -1,0 +1,20 @@
+#!/bin/bash
+
+charge=$(acpi -b | grep -oP "\d+%" | tr -d "%")
+status=$(acpi -b | awk '(print $3)')
+
+echo $charge%
+echo $charge%
+
+# We want to display different charge states with different colors.
+if [[ $charge -lt 20 ]]; then
+    if [[ $charge -lt 20 ]]; then
+        echo "#ff0000"
+    elif [[ $charge -lt 50 ]]; then
+        echo "#ffa500"
+    elif [[ $charge -lt 85 ]]; then
+        echo "#00ff08"
+    fi
+else
+    echo "#90caf9"
+fi
