@@ -2,6 +2,8 @@
 
 These are my important dotfiles.
 
+![Desktop][desktop screenshot]
+
 __There are 3 installation methods:__
 
 - Clone this into your (empty) home folder on a fresh install
@@ -77,3 +79,5 @@ However, I __won't__ merge Pull Requests that
 - or change significant parts, e.g. bindsyms or Vim plugins
 
 because this is a repository dedicated to the dotfiles I use myself.
+
+[desktop screenshot]: https://raw.githubusercontent.com/vbe0201/dotfiles/master/screenshots/desktop.png
