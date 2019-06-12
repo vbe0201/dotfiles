@@ -1,0 +1,16 @@
+[remote "origin"]
+	prune = true
+[user]
+	name = Valentin B.
+	email = valentin.be@protonmail.com
+	# Make sure to replace this or remove this line entirely.
+	# If removed, please also remove the -S flag from the commit alias down below.
+	signingkey = xxx
+[core]
+	editor = vim
+[alias]
+	st = status
+	co = checkout
+	lp = log -p
+	p = push
+	c = commit -S -m

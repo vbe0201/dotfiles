@@ -17,6 +17,7 @@ make_symlink() {
 dotfiles=(
     .bashrc
     .bash_logout
+    .gitconfig
     .profile
     .vimrc
     .Xdefaults
