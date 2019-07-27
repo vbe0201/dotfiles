@@ -42,6 +42,9 @@ Plugin 'scrooloose/nerdtree'
 " Auto completer
 Plugin 'Valloric/YouCompleteMe'
 
+" Discord Rich Presence
+Plugin 'vbe0201/vimdiscord'
+
 call vundle#end()
 
 " Needs adjustment on DOS, e.g. change / to \\
