@@ -1,16 +1,17 @@
-[remote "origin"]
-	prune = true
-[user]
-	name = Valentin B.
-	email = valentin.be@protonmail.com
-	# Make sure to replace this or remove this line entirely.
-	# If removed, please also remove the -S flag from the commit alias down below.
-	signingkey = xxx
+[commit]
+ gpgsign = true
+ template = ~/.gitmessage
+
+[color]
+ ui = auto
+
 [core]
-	editor = vim
+ pager = less
+ ignorecase = false
+
 [alias]
-	st = status
-	co = checkout
-	lp = log -p
-	p = push
-	c = commit -S -m
+ st = status
+ co = checkout
+ lp = log -p
+ p = push
+ c = commit -S -m
