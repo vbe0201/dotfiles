@@ -1,84 +1,85 @@
-# This is my i3wm configuration file.
+# -*- shell-script -*-
+# i3 configuration file.
 
-# Set mod key
-set $mod Mod4
-
-# Font for window titles. Will also be used by the bar
-# (unless a font is used in the bar block below)
+# Set font for window titles. Will also be used by the
+# bar (unless a font is specified in the bar block below).
 font pango:Monospace Regular 14
 
-# Use $mod+Mouse to drag floating windows to their wanted position
+# Set mod key.
+set $mod Mod4
+
+# Use $mod+Mouse to drag floating windows to their desired position.
 floating_modifier $mod
 
-# Start a terminal (in my case urxvt; see the .profile file)
-bindsym $mod+Return exec $TERMINAL
+# Start a new terminal.
+bindsym $mod+Return exec alacritty
 
-# Kill focused window
+# Kill focused window.
 bindsym $mod+Shift+q kill
 
-# Start dmenu (a program launcher)
-bindsym $mod+d exec --no-startup-id "dmenu_run -fn 'monospace:pixelsize=13' -nf '#fff' -nb '#1e1e1e' -sb '#fff' -sf '#1e1e1e'"
+# Start rofi (a program launcher).
+bindsym $mod+d exec --no-startup-id "rofi -show drun -columns 3"
 bindsym $mod+Shift+d exec --no-startup-id ~/.scripts/morc_menu
 
-# Change focus
+# Change focus.
 bindsym $mod+h focus left
 bindsym $mod+j focus down
 bindsym $mod+k focus up
 bindsym $mod+l focus right
 
-# Alternatively, you can use the cursor keys:
-bindsym $mod+Left focus left
-bindsym $mod+Down focus down
-bindsym $mod+Up focus up
+# Alternatively, bind the cursor keys.
+bindsym $mod+Left  focus left
+bindsym $mod+Down  focus down
+bindsym $mod+Up    focus up
 bindsym $mod+Right focus right
 
-# Move focused window
+# Move focused window.
 bindsym $mod+Shift+h move left
 bindsym $mod+Shift+j move down
 bindsym $mod+Shift+k move up
 bindsym $mod+Shift+l move right
 
-# Alternatively, you can use the cursor keys:
-bindsym $mod+Shift+Left move left
-bindsym $mod+Shift+Down move down
-bindsym $mod+Shift+Up move up
+# Alternatively, bind the cursor keys.
+bindsym $mod+Shift+Left  move left
+bindsym $mod+Shift+Down  move down
+bindsym $mod+Shift+Up    move up
 bindsym $mod+Shift+Right move right
 
-# Split in horizontal orientation
+# Split in horizontal orientation.
 bindsym $mod+Shift+v split h
 
-# Split in vertical orientation
+# Split in vertical orientation.
 bindsym $mod+v split v
 
-# Enter fullscreen mode for the focused container
+# Enter fullscreen mode for the focused container.
 bindsym $mod+f fullscreen toggle
 
-# Toggle tiling / floating
+# Toggle tiling / floating.
 bindsym $mod+Shift+space floating toggle
 
-# Change focus between tiling / floating windows
+# Change focus between tiling / floating windows.
 bindsym $mod+space focus mode_toggle
 
-# Focus the parent container
+# Focus the parent container.
 bindsym $mod+a focus parent
 
-# Focus the child container
+# Focus the child container.
 bindsym $mod+z focus child
 
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
-set $ws1 "1"
-set $ws2 "2"
-set $ws3 "3"
-set $ws4 "4"
-set $ws5 "5"
-set $ws6 "6"
-set $ws7 "7"
-set $ws8 "8"
-set $ws9 "9"
+set $ws1  "1"
+set $ws2  "2"
+set $ws3  "3"
+set $ws4  "4"
+set $ws5  "5"
+set $ws6  "6"
+set $ws7  "7"
+set $ws8  "8"
+set $ws9  "9"
 set $ws10 "10"
 
-# Switch to workspace
+# Switch to workspace.
 bindsym $mod+1 workspace $ws1
 bindsym $mod+2 workspace $ws2
 bindsym $mod+3 workspace $ws3
@@ -90,7 +91,7 @@ bindsym $mod+8 workspace $ws8
 bindsym $mod+9 workspace $ws9
 bindsym $mod+0 workspace $ws10
 
-# Move focused container to workspace
+# Move focused container to workspace.
 bindsym $mod+Shift+1 move container to workspace $ws1
 bindsym $mod+Shift+2 move container to workspace $ws2
 bindsym $mod+Shift+3 move container to workspace $ws3
@@ -102,22 +103,22 @@ bindsym $mod+Shift+8 move container to workspace $ws8
 bindsym $mod+Shift+9 move container to workspace $ws9
 bindsym $mod+Shift+0 move container to workspace $ws10
 
-# Switch workspace
+# Switch workspace.
 bindsym $mod+comma workspace prev
 bindsym $mod+period workspace next
 
-# Resize window (you can also use the mouse for that)
+# Resize window (you can also use the mouse for that).
 mode "resize" {
-    # These bindings trigger as soon as you enter the resize mode
+    # These bindings trigger as soon as you enter the resize mode.
     bindsym h resize shrink width 10 px or 10 ppt
     bindsym j resize grow height 10 px or 10 ppt
     bindsym k resize shrink height 10 px or 10 ppt
-    bindsym l resize grow width 10 px or 10 ppt
+    bindsym l resize grow width width 10 px or 10 ppt
 
-    # Same bindings, but for the arrow keys
-    bindsym Left resize shrink width 10 px or 10 ppt
-    bindsym Down resize grow height 10 px or 10 ppt
-    bindsym Up resize shrink height 10 px or 10 ppt
+    # Same bindings, but for the arrow keys.
+    bindsym Left  resize shrink width 10 px or 10 ppt
+    bindsym Down  resize grow height 10 px or 10 ppt
+    bindsym Up    resize shrink height 10 px or 10 ppt
     bindsym Right resize grow width 10 px or 10 ppt
 
     # Back to normal: Enter or Escape or $mod+r
@@ -128,52 +129,51 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
-# Colors
+# Colors.
 set $dark   #1e1e1e
 set $light  #ffffff
 set $high   #bbbbff
-set $urgent #ff0000
+set $urgent #c90672
 
 client.focused          $light $dark $light $light $high
 client.unfocused        $light $dark $light $light $light
 client.urgent           $light $dark $light $light $light
 client.focused_inactive $light $dark $light $light $light
 
-# Start i3bar to display a workspace bar
+# Start i3blocks to display a workspace bar.
 bar {
-    i3bar_command i3bar
-    status_command /usr/bin/i3blocks -c ~/.config/i3blocks/config
     position top
+    status_command /usr/bin/i3blocks -c ~/.config/i3blocks/config
+    i3bar_command i3bar
     font pango:Hack
-    separator_symbol "-"
 
     colors {
         background $dark
         statusline $light
-        focused_workspace  $dark   $light $dark
-        active_workspace   $dark   $light $dark
-        inactive_workspace $dark   $dark  $light
-        urgent_workspace   $urgent $dark  $light
+        focused_workspace $dark $light $dark
+        active_workspace $dark $light $dark
+        inactive_workspace $dark $dark $light
+        urgent_workspace $urgent $dark $light
     }
 }
 
-# Reload the configuration file
+# Reload the configuration file.
 bindsym $mod+Shift+c reload
 
-# Toggle your camera on or off
+# Toggle your camera on or off.
 bindsym $mod+c exec --no-startup-id sh ~/.scripts/camera
 
-# Restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+# Restart i3 inplace (preserves your layout/sessions, can be used to upgrade i3).
 bindsym $mod+Shift+r restart
 
-# Exit i3 (logs you out of your X session)
+# Exit i3 (logs you out of your X session).
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 
-# Bind screenshot utility
+# Bind screenshot utility.
 bindsym Print exec "maim -s | xclip -selection clipboard -t image/png"
 bindsym --release Shift+Print exec "maim ~/Pictures/Screenshots/$(date +%s).png | xclip -selection clipboard -t image/png"
 
-# Bind System keys
+# Bind system keys.
 bindsym XF86PowerOff exec --no-startup-id prompt "Shutdown computer?" "$shutdown"
 bindsym XF86Explorer exec $TERMINAL -e ranger
 bindsym XF86WWW exec --no-startup-id $BROWSER
@@ -186,7 +186,7 @@ bindsym XF86AudioNext exec --no-startup-id cmus-remote --next && pkill --signal 
 bindsym XF86AudioPrev exec --no-startup-id cmus-remote --prev && pkill --signal SIGRTMIN+13 i3blocks
 bindsym XF86AudioPlay exec --no-startup-id cmus-remote --pause && pkill --signal SIGRTMIN+13 i3blocks
 
-# i3-gaps config
+# i3-gaps configuration.
 for_window [class="^.*"] border pixel 3
 bindsym $mod+g gaps inner current plus 5
 bindsym $mod+Shift+g gaps inner current minus 5
@@ -197,12 +197,12 @@ gaps inner 10
 smart_gaps on
 smart_borders no_gaps
 
-# Auto start
+# Auto start.
 
-# Composition manager
+# Composition manager.
 exec_always --no-startup-id compton -bcfn
 
-# Networkmanager
+# Networkmanager.
 exec_always --no-startup-id nm-applet
 
 # Volumeslider
@@ -211,5 +211,5 @@ exec_always --no-startup-id volumeicon
 # Notification service
 exec_always --no-startup-id dunst
 
-# Load wallpaper
+# Load wallpaper.
 exec_always --no-startup-id feh --bg-fill ~/.config/.wallpaper.png
