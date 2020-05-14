@@ -1,83 +1,81 @@
-# Dotfiles
+# ~/.dotfiles
 
-These are my important dotfiles.
+Dotfiles are those files and directories found in Unix-based operating systems
+encharged of saving customization settings of user applications. As the name
+implies, these dotfiles usually start with a `.` in their names.
 
-![Desktop][desktop screenshot]
+These are my personal dotfiles to keep them archived in case I ~~screw up my
+system~~ switch computers and need to get things settled quickly.
 
-__There are 3 installation methods:__
+![License](https://img.shields.io/github/license/vbe0201/dotfiles)
+![Built with Love](https://img.shields.io/badge/Built-with%20%E2%9D%A4%EF%B8%8F-pink)
+![Fuck it Ship it](https://img.shields.io/badge/Fuck%20it-Ship%20it-blueviolet)
 
-- Clone this into your (empty) home folder on a fresh install
+## Software
 
-- Cherry-pick the ones you like
+#### Distro
 
-- Use the `install.sh` script included in this repository
+[Arch Linux](https://www.archlinux.org) rules!
 
-## List of Software
+#### Shell
 
-Here's a list of software corresponding to dotfiles available from this repository.
+* [Alacritty](https://github.com/alacritty/alacritty)
 
-### Editors
+* [zsh](https://github.com/zsh-users/zsh) with [Oh My Zsh](https://github.com/ohmyzsh/ohmyzsh)
 
-- Vim
+* [Powerlevel10k](https://github.com/romkatv/powerlevel10k)
 
-### WM
+* [Nerd Fonts](https://github.com/ryanoasis/nerd-fonts), I use Hack
 
-- Compton
+#### Window Manager
 
-- i3
+* [i3-gaps](https://github.com/Airblader/i3)
 
-- LightDM
+* [i3blocks](https://github.com/vivien/i3blocks)
 
-### Other
+* [compton/picom](https://github.com/yshui/picom)
 
-- fontconfig
+* [rofi](https://github.com/DaveDavenport/rofi)
 
-- highlight
+* [feh](https://github.com/derf/feh)
 
-- leafpad
+* fontconfig
 
-- mpv
+#### Other
 
-- ranger
+* [spacemacs](https://github.com/syl20bnr/spacemacs) (primary)
 
-- URxvt
+* [Vim](https://github.com/vim/vim)
 
-- youtube-dl
+* [LightDM](https://github.com/canonical/lightdm) with [lightdm-webkit2-greeter](https://github.com/Antergos/web-greeter)
 
-- youtube-viewer
+* [pacman-contrib](https://www.archlinux.org/packages/?name=pacman-contrib)
 
-- Zathura
+## Installation
 
-## Miscellaneous notes
+* Clone this into your (empty) home directory on a fresh install
 
-- I use Arch btw
+* Cherry-pick the ones you like
 
-- I'm a minimalist
+## Screenshots
 
-- You may want to have a look at `compton.conf` and play around with various performance improving options
+#### Desktop:
 
-- Remove the plugins `vim-maktaba`, `vim-cmake` and `vim-bazel` from your `.vimrc` if you don't need them
+![Desktop][desktop]
 
-- You may want to change the colors of your URxvt configuration (`.Xdefaults`)
+#### Terminal:
 
-- Yes, I'm a weeb. Make sure to have your own wallpaper stored as `~/.config/wallpaper.png` if you don't want mine
+![Terminal][terminal]
 
-- If you're on a desktop computer, make sure to remove the `battery` section from i3blocks configuration. Without a battery, this looks ugly.
+#### Spacemacs:
 
-- Pay attention to the fontconfig. I use Hack systemwide. You can get it with `pacman -S ttf-hack`
+![Spacemacs][spacemacs]
 
-- `pacman -S maim xclip` for proper screenshotting (see i3 config)
+#### rofi:
 
-## Contributing
+![rofi][rofi]
 
-Pull Requests that improve spelling or fix malfunctioning parts of the configurations are totally fine and appreciated.
-
-However, I __won't__ merge Pull Requests that
-
-- add entirely new configs
-
-- or change significant parts, e.g. bindsyms or Vim plugins
-
-because this is a repository dedicated to the dotfiles I use myself.
-
-[desktop screenshot]: https://raw.githubusercontent.com/vbe0201/dotfiles/master/screenshots/desktop.png
+[desktop](./screenshots/desktop.png)
+[spacemacs](./screenshots/spacemacs.png)
+[terminal](./screenshots/terminal.png)
+[rofi](./screenshots/rofi.png)
