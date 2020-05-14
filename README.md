@@ -69,7 +69,7 @@ system~~ switch computers and need to get things settled quickly.
 
 #### Spacemacs:
 
-![Spacemacs][./screenshots/spacemacs.png]
+![Spacemacs](./screenshots/spacemacs.png)
 
 #### rofi:
 
