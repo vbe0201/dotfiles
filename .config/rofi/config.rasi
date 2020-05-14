@@ -1,0 +1,69 @@
+/**
+ * ROFI Dark Theme
+ * User: vale
+ * Copyright: Valentin B.
+ */
+
+configuration {
+  display-run: "╰❯ ";
+  display-drun: " ";
+  display-window: " ";
+}
+
+* {
+  background: #272833;
+  background-hover: #8E8AF2;
+  foreground: #EAD6FF;
+
+  background-color: @background;
+
+  light: #F0F0F0;
+  yellow: #F7FFB0;
+
+  border: 0;
+  lines: 12;
+  padding: 0;
+  margin: 0;
+  spacing: 0;
+}
+
+window {
+  width: 30%;
+  transparency: "real";
+}
+
+mainbox {
+  children: [inputbar, listview];
+}
+
+listview {
+  columns: 1;
+}
+
+element {
+  padding: 12;
+  orientation: vertical;
+  text-color: @foreground;
+}
+
+element selected {
+  background-color: @background-hover;
+  text-color: @light;
+}
+
+inputbar {
+  background-color: @background;
+  children: [prompt, entry];
+}
+
+prompt {
+  enabled: true;
+  font: "SauceCodePro Nerd Font 12";
+  padding: 12 0 0 12;
+  text-color: @yellow;
+}
+
+entry {
+  padding: 12;
+  text-color: @yellow;
+}
