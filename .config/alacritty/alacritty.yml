@@ -1,0 +1,141 @@
+# Configuration of Alacritty, the GPU-enhanced terminal emulator.
+
+# Environment configuration.
+env:
+  TERM: xterm-256color
+
+# Window configuration.
+window:
+  dimensions:
+    columns: 0
+    lines: 0
+
+  padding:
+    x: 1
+    y: 1
+
+  dynamic_padding: false
+
+  decorations: full
+
+# Scrolling configuration.
+scrolling:
+  history: 10000
+
+  multiplier: 1
+
+# Font configuration.
+font:
+  normal:
+    family: Hack
+    style: Regular
+
+  bold:
+    family: Hack
+    style: Bold
+
+  italic:
+    family: Hack
+    style: Italic
+
+  size: 10.0
+
+  offset:
+    x: 0
+    y: 0
+
+  glyph_offset:
+    x: 0
+    y: 0
+
+  scale_with_dpi: true
+
+  use_thin_strokes: false
+
+draw_bold_text_with_bright_colors: true
+
+# Debugging settings.
+debug.render_time: false
+debug.persistent_logging: false
+
+# Colors configuration.
+colors:
+  primary:
+    background: '0x272833'
+    foreground: '0xF0F0E6'
+
+  normal:
+    black:   '0x0D0D0D'
+    red:     '0xCC042F'
+    green:   '0x3AA842'
+    yellow:  '0xCCA828'
+    blue:    '0x1767FF'
+    magenta: '0x713AA8'
+    cyan:    '0x4ACFBC'
+    white:   '0xB0B0B0'
+
+  bright:
+    black:   '0x858575'
+    red:     '0xD6779C'
+    green:   '0x88C661'
+    yellow:  '0xFFDA73'
+    blue:    '0x8CD6E2'
+    magenta: '0xFB85FF'
+    cyan:    '0x85EDE8'
+    white:   '0xFFFFFF'
+
+indexed_colors: []
+
+# Visual Bell configuration.
+visual_bell:
+  animation: EaseOutExpo
+  duration: 0
+
+# Background opacity: Opaque.
+background_opacity: 1.0
+
+# Mouse configuration.
+mouse:
+  double_click: { threshold: 300 }
+  triple_click: { threshold: 300 }
+
+  faux_scrolling_lines: 1
+
+  hide_when_typing: false
+
+  url:
+    launcher: firefox
+    modifiers: Control
+
+selection:
+  semantic_escape_chars: ",│`|:\"' ()[]{}<>"
+  save_to_clipboard: true
+
+mouse_bindings:
+  - { mouse: Middle, action: PasteSelection }
+
+dynamic_title: true
+
+cursor:
+  style: Block
+  unfocused_hollow: true
+
+live_config_reload: true
+
+# Shell configuration.
+shell:
+  program: /usr/bin/zsh
+
+# Key bindings.
+key_bindings:
+  - { key: PageUp,    mods: Shift,   action: ScrollPageUp,    mode: ~Alt }
+  - { key: PageDown,  mods: Shift,   action: ScrollPageDown,  mode: ~Alt }
+  - { key: Home,      mods: Shift,   action: ScrollToTop,     mode: ~Alt }
+  - { key: End,       mods: Shift,   action: ScrollToBottom,  mode: ~Alt }
+  - { key: Copy,                     action: Copy                        }
+  - { key: Paste,                    action: Paste                       }
+  - { key: Equals,    mods: Control, action: IncreaseFontSize            }
+  - { key: Add,       mods: Control, action: IncreaseFontSize            }
+  - { key: Subtract,  mods: Control, action: DecreaseFontSize            }
+  - { key: Minus,     mods: Control, action: DecreaseFontSize            }
+  - { key: Key0,      mods: Control, action: ResetFontSize               }
