@@ -212,4 +212,4 @@ exec_always --no-startup-id volumeicon
 exec_always --no-startup-id dunst
 
 # Load wallpaper
-exec_always --no-startup-id feh --bg-fill ~/.config/wallpaper.png
+exec_always --no-startup-id feh --bg-fill ~/.config/.wallpaper.png
