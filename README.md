@@ -1,15 +1,15 @@
 # ~/.dotfiles
 
+![License](https://img.shields.io/github/license/vbe0201/dotfiles)
+![Built with Love](https://img.shields.io/badge/Built-with%20%E2%9D%A4%EF%B8%8F-pink)
+![Fuck it Ship it](https://img.shields.io/badge/Fuck%20it-Ship%20it-blueviolet)
+
 Dotfiles are those files and directories found in Unix-based operating systems
 encharged of saving customization settings of user applications. As the name
 implies, these dotfiles usually start with a `.` in their names.
 
 These are my personal dotfiles to keep them archived in case I ~~screw up my
 system~~ switch computers and need to get things settled quickly.
-
-![License](https://img.shields.io/github/license/vbe0201/dotfiles)
-![Built with Love](https://img.shields.io/badge/Built-with%20%E2%9D%A4%EF%B8%8F-pink)
-![Fuck it Ship it](https://img.shields.io/badge/Fuck%20it-Ship%20it-blueviolet)
 
 ## Software
 
@@ -61,21 +61,16 @@ system~~ switch computers and need to get things settled quickly.
 
 #### Desktop:
 
-![Desktop][desktop]
+![Desktop](./screenshots/desktop.png)
 
 #### Terminal:
 
-![Terminal][terminal]
+![Terminal](./screenshots/terminal.png)
 
 #### Spacemacs:
 
-![Spacemacs][spacemacs]
+![Spacemacs][./screenshots/spacemacs.png]
 
 #### rofi:
 
-![rofi][rofi]
-
-[desktop](./screenshots/desktop.png)
-[spacemacs](./screenshots/spacemacs.png)
-[terminal](./screenshots/terminal.png)
-[rofi](./screenshots/rofi.png)
+![rofi](./screenshots/rofi.png)
