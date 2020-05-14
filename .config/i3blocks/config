@@ -1,40 +1,61 @@
-command=/usr/libexec/i3blocks/$BLOCK_NAME
-separator=true
-separator_block_width=10
-border_top=0
-border_bottom=2
-border=#ffffff55
+# -*- shell-script -*-
+# i3blocks configuration file.
 
-# CMus
+align=center
+separator=false
+color=#ffffff
+separator_block_width=20
+markup=pango
+
+# Arch Linux package updates.
+[arch-update]
+label=<span color="#1793D1"> </span>
+command=checkupdates | wc -l
+interval=once
+
+# Current date and time.
+[time]
+label=<span color="#f5d49a"> </span>
+command=date '+%m/%d/%y %H:%M:%S'
+interval=1
+
+# Battery indicator (can be removed for desktop computers).
+[battery]
+label=<span color="#ffd900">⚡</span>
+command=~/.scripts/battery
+interval=10
+
+# WiFi network and usage.
+[wifi]
+label=<span color="#fb86c0"> </span>
+command=iwgetid -r | tr '\n' ' ' && grep $(iwgetid -m | awk '{ printf "%s", $1 }') /proc/net/wireless | awk '{ printf "%i%\n", int($3 * 100 / 70) }'
+interval=5
+
+# CMus song.
 [cmus]
-label= ♪
+label=<span color="#42f560">♪ </span>
 align=center
 command=~/.scripts/cmus
 interval=5
 signal=13
 
-# Volume indicator
+# Volume indicator.
 [volume 5% pulse]
-label= 🔊
+label=<span color="#ff79c6">🔊 </span>
 instance=Master
 command=~/.scripts/volume
 interval=5
 markup=pango
 signal=12
-border=#e562e3
 
-# Battery indicator (can be removed on desktop pcs)
-[battery]
-label= ⚡
-command=~/.scripts/battery
-interval=10
-border=#ddda2e
+# CPU usage.
+[cpu-usage]
+label=<span color="#8be9fd"> </span>
+command=grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage "%"}'
+interval=2
 
-# Date Time
-[time]
-label= ⌚
-command=date '+%m/%d/%y %H:%M:%S'
-interval=5
-markup=pango
-border=#191919
-separator_block_width=0
+# Memory indicator.
+[memory]
+label=<span color="#a9e185"> </span>
+command=free -h --si | awk 'FNR==2{ print $0 }' | awk '{ print $7 }'
+interval=2
