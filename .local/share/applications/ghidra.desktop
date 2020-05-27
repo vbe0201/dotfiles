@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Ghidra
+Icon=~/.local/share/Ghidra/.icon.png
+StartupWMClass=ghidra
+Comment=Ghidra is a software reverse engineering (SRE) framework
+Exec="/opt/ghidra/ghidraRun" %f
+Version=9.1.2
+Type=Application
+Categories=Development;Reversing;
+Terminal=false

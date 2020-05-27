@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=HAL
+StartupWMClass=hal
+Comment=The Hardware Analyzer
+Exec=/usr/bin/hal -g
+Version=2.0.0
+Type=Application
+Categories=Development;Reversing;
+Terminal=false
