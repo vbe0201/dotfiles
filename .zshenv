@@ -13,6 +13,9 @@ export BROWSER='firefox'
 # emacs
 export EDITOR='emacs'
 
+# Ghidra
+export GHIDRA_INSTALL_DIR='/opt/ghidra'
+
 # Localization
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
@@ -37,3 +40,8 @@ export LESSHISTFILE=-
 
 # pip
 export PATH=$HOME/.local/bin:$PATH
+
+# DevkitPro
+export DEVKITPRO='/opt/devkitpro'
+export DEVKITARM='$DEVKITPRO/devkitARM'
+export DEVKITPPC='$DEVKITPRO/devkitPPC'
