@@ -87,7 +87,7 @@ colors:
 indexed_colors: []
 
 # Visual Bell configuration.
-visual_bell:
+bell:
   animation: EaseOutExpo
   duration: 0
 
@@ -114,7 +114,7 @@ selection:
 mouse_bindings:
   - { mouse: Middle, action: PasteSelection }
 
-dynamic_title: true
+window.dynamic_title: true
 
 cursor:
   style: Block
