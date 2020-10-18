@@ -199,6 +199,9 @@ smart_borders no_gaps
 
 # Auto start.
 
+# EurKEY font.
+exec_always --no-startup-id setxkbmap eu
+
 # Composition manager.
 exec_always --no-startup-id compton -bcfn
 
