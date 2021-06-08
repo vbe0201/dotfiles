@@ -110,16 +110,16 @@ bindsym $mod+period workspace next
 # Resize window (you can also use the mouse for that).
 mode "resize" {
     # These bindings trigger as soon as you enter the resize mode.
-    bindsym h resize shrink width 10 px or 10 ppt
-    bindsym j resize grow height 10 px or 10 ppt
+    bindsym h resize shrink width  10 px or 10 ppt
+    bindsym j resize grow   height 10 px or 10 ppt
     bindsym k resize shrink height 10 px or 10 ppt
-    bindsym l resize grow width width 10 px or 10 ppt
+    bindsym l resize grow   width  10 px or 10 ppt
 
     # Same bindings, but for the arrow keys.
-    bindsym Left  resize shrink width 10 px or 10 ppt
-    bindsym Down  resize grow height 10 px or 10 ppt
+    bindsym Left  resize shrink width  10 px or 10 ppt
+    bindsym Down  resize grow   height 10 px or 10 ppt
     bindsym Up    resize shrink height 10 px or 10 ppt
-    bindsym Right resize grow width 10 px or 10 ppt
+    bindsym Right resize grow   width  10 px or 10 ppt
 
     # Back to normal: Enter or Escape or $mod+r
     bindsym Return mode "default"
@@ -130,40 +130,20 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 # Colors.
-set $dark   #1e1e1e
+set $dark   #1d1f21
 set $light  #ffffff
-set $high   #bbbbff
-set $urgent #c90672
+set $high   #d92057
+set $urgent #cca828
 
 client.focused          $light $dark $light $light $high
-client.unfocused        $light $dark $light $light $light
-client.urgent           $light $dark $light $light $light
 client.focused_inactive $light $dark $light $light $light
-
-# Start i3blocks to display a workspace bar.
-bar {
-    position top
-    status_command /usr/bin/i3blocks -c ~/.config/i3blocks/config
-    i3bar_command i3bar
-    font pango:Hack
-
-    colors {
-        background $dark
-        statusline $light
-        focused_workspace $dark $light $dark
-        active_workspace $dark $light $dark
-        inactive_workspace $dark $dark $light
-        urgent_workspace $urgent $dark $light
-    }
-}
+client.unfocused        $light $dark $light $light $dark
+client.urgent           $light $dark $light $light $light
 
 # Reload the configuration file.
 bindsym $mod+Shift+c reload
 
-# Toggle your camera on or off.
-bindsym $mod+c exec --no-startup-id sh ~/.scripts/camera
-
-# Restart i3 inplace (preserves your layout/sessions, can be used to upgrade i3).
+# Restart i3 in-place (preserves your layout/sessions, can be used to upgrade i3).
 bindsym $mod+Shift+r restart
 
 # Exit i3 (logs you out of your X session).
@@ -179,40 +159,39 @@ bindsym XF86Explorer exec $TERMINAL -e ranger
 bindsym XF86WWW exec --no-startup-id $BROWSER
 bindsym XF86MyComputer exec $TERMINAL -e ranger
 bindsym XF86HomePage exec $BROWSER
-bindsym XF86AudioRaiseVolume exec --no-startup-id /bin/bash "~/.scripts/volume.sh" up
-bindsym XF86AudioLowerVolume exec --no-startup-id /bin/bash "~/.scripts/volume.sh" down
-bindsym XF86AudioMute exec --no-startup-id /bin/bash "~/.scripts/volume.sh" mute
-bindsym XF86AudioNext exec --no-startup-id cmus-remote --next && pkill --signal SIGRTMIN+13 i3blocks
-bindsym XF86AudioPrev exec --no-startup-id cmus-remote --prev && pkill --signal SIGRTMIN+13 i3blocks
-bindsym XF86AudioPlay exec --no-startup-id cmus-remote --pause && pkill --signal SIGRTMIN+13 i3blocks
+bindsym XF86AudioRaiseVolume exec amixer -q set Master 10%+ unmute
+bindsym XF86AudioLowerVolume exec amixer -q set Master 10%- unmute
+bindsym XF86AudioMute exec amixer -q set Master toggle
+bindsym XF86AudioPlay exec playerctl play
+bindsym XF86AudioPause exec playerctl pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
 
 # i3-gaps configuration.
 for_window [class="^.*"] border pixel 3
 bindsym $mod+g gaps inner current plus 5
 bindsym $mod+Shift+g gaps inner current minus 5
 
-gaps outer 5
-gaps inner 10
+gaps outer 40
+gaps inner 30
 
 smart_gaps on
 smart_borders no_gaps
 
-# Auto start.
+# Autostart.
 
-# EurKEY font.
-exec_always --no-startup-id setxkbmap eu
+# Compositor.
+exec_always --no-startup-id picom -bcf
 
-# Composition manager.
-exec_always --no-startup-id compton -bcfn
-
-# Networkmanager.
-exec_always --no-startup-id nm-applet
-
-# Volumeslider
-exec_always --no-startup-id volumeicon
-
-# Notification service
-exec_always --no-startup-id dunst
+# Start Polybar.
+exec_always --no-startup-id ~/.config/polybar/launch
 
 # Load wallpaper.
-exec_always --no-startup-id feh --bg-fill ~/.config/.wallpaper.png
+exec_always --no-startup-id feh --bg-fill ~/.config/wallpaper.jpg
+
+# Fix behavior of middle mouse button into scrolling.
+exec_always --no-startup-id xinput set-prop "Logitech Gaming Mouse G402" "libinput Scroll Method Enabled" 0, 0, 1
+exec_always --no-startup-id xinput set-prop "Logitech Gaming Mouse G402" "libinput Button Scrolling Button" 2
+
+# Notification service.
+exec_always --no-startup-id dunst

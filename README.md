@@ -15,7 +15,7 @@ system~~ switch computers and need to get things settled quickly.
 
 #### Distro
 
-[Arch Linux](https://www.archlinux.org) rules!
+[Gentoo](https://www.gentoo.org)
 
 #### Shell
 
@@ -31,7 +31,9 @@ system~~ switch computers and need to get things settled quickly.
 
 * [i3-gaps](https://github.com/Airblader/i3)
 
-* [i3blocks](https://github.com/vivien/i3blocks)
+* [polybar](https://github.com/polybar/polybar)
+
+* [dunst](https://github.com/dunst-project/dunst)
 
 * [compton/picom](https://github.com/yshui/picom)
 
@@ -47,9 +49,7 @@ system~~ switch computers and need to get things settled quickly.
 
 * [Vim](https://github.com/vim/vim)
 
-* [LightDM](https://github.com/canonical/lightdm) with [lightdm-webkit2-greeter](https://github.com/Antergos/web-greeter)
-
-* [pacman-contrib](https://www.archlinux.org/packages/?name=pacman-contrib)
+* [LightDM](https://github.com/canonical/lightdm) with lightdm-gtk-greeter
 
 ## Installation
 

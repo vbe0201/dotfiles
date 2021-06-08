@@ -1,4 +1,4 @@
-# Configuration of Alacritty, the GPU-enhanced terminal emulator.
+# Configuration file for Alacritty, the GPU-enhanced terminal emulator.
 
 # Environment configuration.
 env:
@@ -20,7 +20,7 @@ window:
 
 # Scrolling configuration.
 scrolling:
-  history: 10000
+  history: 100000
 
   multiplier: 1
 
@@ -38,7 +38,7 @@ font:
     family: Hack
     style: Italic
 
-  size: 10.0
+  size: 11.5
 
   offset:
     x: 0
@@ -65,24 +65,24 @@ colors:
     foreground: '0xF0F0E6'
 
   normal:
-    black:   '0x0D0D0D'
-    red:     '0xCC042F'
+    black:   '0x1D1F21'
+    red:     '0xD92057'
     green:   '0x3AA842'
     yellow:  '0xCCA828'
-    blue:    '0x1767FF'
-    magenta: '0x713AA8'
-    cyan:    '0x4ACFBC'
-    white:   '0xB0B0B0'
+    blue:    '0x366AC3'
+    magenta: '0x9843B0'
+    cyan:    '0x2AC3DE'
+    white:   '0x707880'
 
   bright:
-    black:   '0x858575'
-    red:     '0xD6779C'
-    green:   '0x88C661'
+    black:   '0x373B41'
+    red:     '0xF7768E'
+    green:   '0x9ECE6A'
     yellow:  '0xFFDA73'
-    blue:    '0x8CD6E2'
+    blue:    '0x7AA2F7'
     magenta: '0xFB85FF'
-    cyan:    '0x85EDE8'
-    white:   '0xFFFFFF'
+    cyan:    '0x7DCFFF'
+    white:   '0xC5C8C6'
 
 indexed_colors: []
 
@@ -117,25 +117,26 @@ mouse_bindings:
 window.dynamic_title: true
 
 cursor:
-  style: Block
+  style:
+    shape: Block
+    blinking: On
+
   unfocused_hollow: true
 
 live_config_reload: true
 
 # Shell configuration.
 shell:
-  program: /usr/bin/zsh
+  program: /bin/zsh
 
 # Key bindings.
 key_bindings:
-  - { key: PageUp,    mods: Shift,   action: ScrollPageUp,    mode: ~Alt }
-  - { key: PageDown,  mods: Shift,   action: ScrollPageDown,  mode: ~Alt }
-  - { key: Home,      mods: Shift,   action: ScrollToTop,     mode: ~Alt }
-  - { key: End,       mods: Shift,   action: ScrollToBottom,  mode: ~Alt }
-  - { key: Copy,                     action: Copy                        }
-  - { key: Paste,                    action: Paste                       }
-  - { key: Equals,    mods: Control, action: IncreaseFontSize            }
-  - { key: Add,       mods: Control, action: IncreaseFontSize            }
-  - { key: Subtract,  mods: Control, action: DecreaseFontSize            }
-  - { key: Minus,     mods: Control, action: DecreaseFontSize            }
-  - { key: Key0,      mods: Control, action: ResetFontSize               }
+  - { key: PageUp,    mods: Shift,    action: ScrollPageUp,     mode: ~Alt }
+  - { key: PageDown,  mods: Shift,    action: ScrollPageDown,   mode: ~Alt }
+  - { key: Home,      mods: Shift,    action: ScrollToTop,      mode: ~Alt }
+  - { key: End,       mods: Shift,    action: ScrollToBottom,   mode: ~Alt }
+  - { key: Copy,                      action: Copy                         }
+  - { key: Paste,                     action: Paste                        }
+  - { key: Equals,    mods: Control,  action: IncreaseFontSize             }
+  - { key: Minus,     mods: Control,  action: DecreaseFontSize              }
+  - { key: Key0,      mods: Control,  action: ResetFontSize                }
