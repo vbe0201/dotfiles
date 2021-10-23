@@ -38,7 +38,7 @@ font:
     family: Hack
     style: Italic
 
-  size: 11.5
+  size: 12
 
   offset:
     x: 0
@@ -103,7 +103,7 @@ mouse:
 
   hide_when_typing: false
 
-  url:
+  hints:
     launcher: firefox
     modifiers: Control
 
@@ -138,5 +138,5 @@ key_bindings:
   - { key: Copy,                      action: Copy                         }
   - { key: Paste,                     action: Paste                        }
   - { key: Equals,    mods: Control,  action: IncreaseFontSize             }
-  - { key: Minus,     mods: Control,  action: DecreaseFontSize              }
+  - { key: Minus,     mods: Control,  action: DecreaseFontSize             }
   - { key: Key0,      mods: Control,  action: ResetFontSize                }
